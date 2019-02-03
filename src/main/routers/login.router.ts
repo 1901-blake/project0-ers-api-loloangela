@@ -1,7 +1,7 @@
 import express, { response } from 'express';
 import { LoginDao } from '../dao/login.dao';
 import { RoleDao } from '../dao/role.dao';
-
+import { pswd } from "../index";
 export const loginRouter = express.Router();
 
 loginRouter.post('', async (req, res) => {
@@ -13,6 +13,8 @@ loginRouter.post('', async (req, res) => {
     if (result) {
       console.log(`After cred validation the result is:`);
       console.log(result);
+      // Remove user password for security
+      result.password = pswd;
       // Find the role and package the user_id and role in an object and attach it to the session.
       const roleDao = new RoleDao();
       const roleRes = await roleDao.getRole(result['role_id']);
@@ -26,7 +28,7 @@ loginRouter.post('', async (req, res) => {
         };
         console.log('Created user object for session (router):');
         req.session.user = user;
-        console.log('Set session data: (router)');
+        console.log('Set session data: (router)\n', req.session.user);``
         res.json(result);
       }
     }

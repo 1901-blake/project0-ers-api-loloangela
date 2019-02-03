@@ -5,6 +5,7 @@ import { financeAdminAuthMid as financeAdminAuth } from '../middlewares/finance-
 import { adminAuthMid as adminAuth } from "../middlewares/admin.auth.middleware";
 import { userAuthMiddleware as userAuth } from '../middlewares/user.auth.middleware';
 import { User } from '../models/user';
+import { pswd } from "../index";
 
 export const usersRouter = express.Router();
 
@@ -15,6 +16,10 @@ usersRouter.get('', [loginAuth, financeAdminAuth, async (req, res) => {
     const result = await userDao.findAllUsers();
     if (result) {
       console.log('All Users Result in Router:\n', result);
+      // Replace users passwords
+      result.forEach(element => {
+        element.password = pswd;
+      });
       res.status(201).json(result);
     }
   } catch (error) {
@@ -33,9 +38,8 @@ usersRouter.get('/:userid', [loginAuth, userAuth, financeAdminAuth, async (req, 
     const result = await userDao.findByUserId(req.params.userid);
     if (result) {
       console.log('Users Result in Router:\n', result);
-      // Editing the res or req variables in the middlewares prior
-      // does something with the headers that don't allow res.send()
-      // Look at movie api for ideas
+      // Remove password for security
+      result.password = pswd;
       res.status(201).json(result);
     }
   } catch (error) {
@@ -62,6 +66,8 @@ usersRouter.patch('', [loginAuth, adminAuth, async (req, res) => {
     const result = await userDao.updateUser(user);
     console.log('User update request: \n', result);
     if (result) {
+      // Remove password for security
+      result.password = pswd;
       res.status(201).json(result);
     }
   } catch (error) {

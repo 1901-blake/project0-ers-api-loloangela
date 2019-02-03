@@ -23,6 +23,8 @@ app.get('', (req, res) => {
   res.send(welcomeMsg);
 })
 
+// Default password 
+export const pswd: string = '********';
 // Routers
 app.use('/login', loginRouter);
 app.use('/reimbursements', reimburseRouter);
