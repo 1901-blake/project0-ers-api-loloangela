@@ -83,9 +83,9 @@ reimburseRouter.get('/author/:userid', [loginAuth, userAuth, financeAdminAuth, a
 
 // Update reimbursement
 reimburseRouter.patch('', [loginAuth, financeAdminAuth, async (req, res) => {
-  console.log('Inside reimburse router for update');
+  // console.log('Inside reimburse router for update');
   const reimbursement = new Reimburse();
-  console.log(req.body);
+  // console.log(req.body);
   reimbursement.reimburse_id = req.body.reimburse_id;
   reimbursement.author_id = req.body.author_id;
   reimbursement.amount = req.body.amount;

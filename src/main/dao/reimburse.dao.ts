@@ -44,7 +44,7 @@ export class ReimbursementDao {
       // console.log('Connected to db ...');
       const result = await client.query('SELECT * FROM reimbursements WHERE status_id=$1;', [id]);
       if (result) {
-        console.log('From the db we got these reimbursements:\n', result.rows);
+        // console.log('From the db we got these reimbursements:\n', result.rows);
         return result.rows || false;
       } else {
         return false;
@@ -76,7 +76,7 @@ export class ReimbursementDao {
 
   // Update reimbursement
   public async updateReimbursement(reimbData: Reimbursements, curUser: number) {
-    console.log('The reimbursement data to update is ', reimbData);
+    // console.log('The reimbursement data to update is ', reimbData);
     const pool = SessionFactory.getConnectionPool();
     try {
       const client = await pool.connect();

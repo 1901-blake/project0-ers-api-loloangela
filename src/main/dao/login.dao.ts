@@ -28,7 +28,7 @@ export class LoginDao {
 
         // Compare password with stored hash value.
         const hash = new Hashing();
-        // console.log('About to hash the pswd');
+        // console.log('About to hash the pswd, the hash comparing:\n', result.rows[0]['password']);
         if (hash.compareHash(password, result.rows[0]['password'])) {
           // console.log('Inside compHash in login DAO, pswd valid');
           return result.rows[0];

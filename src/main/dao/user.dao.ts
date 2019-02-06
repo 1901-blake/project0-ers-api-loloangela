@@ -67,7 +67,7 @@ export class UserDao {
       await client.release();
 
       // Return result
-      // console.log('Result from user update (dao): ', result.rows[0]);
+      console.log('Result from user update (dao): ', result.rows[0]);
       return result.rows[0] || false;
     } catch (error) {
       console.log('The userDao failed to update the user\n', error);

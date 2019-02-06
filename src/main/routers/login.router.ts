@@ -23,8 +23,9 @@ loginRouter.post('', async (req, res) => {
 
   try {
     const result = await loginDao.login(req.body['username'], req.body['password']);
+    // console.log('Username and Password: ', [req.body['username'], req.body['password']])
     if (result) {
-      console.log(`After cred validation the result is:\n`, result);
+      // console.log(`After cred validation the result is:\n`, result);
       // Remove user password for security
       result.password = pswd;
       // Find the role and package the user_id and role in an object and attach it to the session.
@@ -36,9 +37,9 @@ loginRouter.post('', async (req, res) => {
           user_id: result['user_id'],
           role: roleRes
         };
-        // console.log('Created user object for session (router):\n', typeof user);
+        console.log('Created user object for session (router):\n', typeof user);
         req.session.user = user;
-        console.log('Set session data: (router)\n', req.session.user);
+        // console.log('Set session data: (router)\n', req.session.user);
         res.json(result);
       } else {
         res.status(500).send('An error occured please retry your request later.');

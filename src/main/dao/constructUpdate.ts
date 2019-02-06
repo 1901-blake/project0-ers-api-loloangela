@@ -34,7 +34,8 @@ export function constructUpdate(
         // console.log('Status_id has changed!');
       } else if (fields[i] === 'password') {
         // If password is changed then hash it and store the hashed value (Users Only)
-        const hash = bcrypt.hashSync(fields[i], 10);
+        const hash = bcrypt.hashSync(obj[fields[i]], 10);
+        // console.log('New password after hashing (cu):\n', hash);
         obj[fields[i]] = hash;
       } else if (fields[i] === 'resolver_id') {
         obj[fields[i]] = currentUser;

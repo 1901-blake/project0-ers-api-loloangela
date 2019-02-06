@@ -52,5 +52,5 @@ app.use('/reimbursements', reimburseRouter);
 app.use('/users', usersRouter);
 
 // Start server and listen for requests 
-app.listen(3000);
+app.listen(port);
 console.log(`Application running on port ${port} ...`);
