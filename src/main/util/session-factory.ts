@@ -1,3 +1,13 @@
+/* 
+ * ERS API
+ * Author: Lori A. Oliver
+ * 02/06/2019
+ * Revature - Blake 1901
+ * This API implements an Expense Reimbursement System
+ * 
+ * SessionFactory - This class creates a connection pool to the DB in order
+ * to be used by DAO classes for all queries.
+ */
 import { Pool } from 'pg';
 
 export class SessionFactory {
@@ -9,11 +19,9 @@ export class SessionFactory {
     max: 10,
     port: process.env.PostgreSQLPort
   };
-
   static pool: Pool;
   static created = false;
 
-  // Lazy Loaded function (1st time is slower to connect)
   static getConnectionPool(): Pool {
     if (!this.created) {
       this.pool = new Pool(this.cred);

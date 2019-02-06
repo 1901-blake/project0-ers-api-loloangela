@@ -1,17 +1,30 @@
+/* 
+ * ERS API
+ * Author: Lori A. Oliver
+ * 02/06/2019
+ * Revature - Blake 1901
+ * 
+ * reimburse.router - Set of functions used to handle HTTP requests (POST, GET, PATCH)
+ * that can be made from the /reimbursements url.
+ * 
+ * Features:
+ * Security - Uses middlewares to determine if the user is logged in and if they have the
+ * necessary permissions to access the requested resource.
+ */
 import express from 'express';
 
 import { loginAuthMid as loginAuth } from '../middlewares/login.auth.middleware';
 import { financeAdminAuthMid as financeAdminAuth } from '../middlewares/finance-admin.auth.middleware';
-import { userAuthMiddleware as userAuth } from '../middlewares/user.auth.middleware';
+import { userAuthMid as userAuth } from '../middlewares/user.auth.middleware';
 import { Reimbursements as Reimburse } from '../models/reimbursements';
 import { ReimbursementDao } from '../dao/reimburse.dao';
 
 
 export const reimburseRouter = express.Router();
 
-// Submit a new reimbursement
+// Submit new reimbursement
 reimburseRouter.post('', [loginAuth, async (req, res) => {
-  console.log('Made it to reimbursement router ...');
+  // console.log('Made it to reimbursement router ...');
   // Take request and upload to DB.
   const reimbursement = new Reimburse();
   reimbursement.author_id = req.body.author_id;
@@ -26,10 +39,9 @@ reimburseRouter.post('', [loginAuth, async (req, res) => {
     const reimburseDao = await new ReimbursementDao();
     const result = await reimburseDao.newReimburse(reimbursement);
     if (result) {
-      console.log('Reimburse response:');
-      console.log(result);
+      console.log('Reimburse response:\n', result);
       res.status(201).json(result);
-    } 
+    }
   } catch (error) {
     console.log(`Creating new reimbursement failed. (router)\n${error}`);
     res.status(400).send('Unable to add new record');
@@ -38,11 +50,12 @@ reimburseRouter.post('', [loginAuth, async (req, res) => {
 
 // Find reimbursement by status_id
 reimburseRouter.get('/status/:statusid', [loginAuth, financeAdminAuth, async (req, res) => {
-  console.log('Inside reimbursement router for find by status');
+  // console.log('Inside reimbursement router for find by status');
   try {
     const reimburseDao = await new ReimbursementDao();
     const result = await reimburseDao.findById(req.params.statusid);
     if (result) {
+      console.log('Reimbursements by status_id:\n', result);
       res.status(201).json(result);
     }
   } catch (error) {
@@ -53,15 +66,13 @@ reimburseRouter.get('/status/:statusid', [loginAuth, financeAdminAuth, async (re
 
 // Find reimbursement by user_id
 reimburseRouter.get('/author/:userid', [loginAuth, userAuth, financeAdminAuth, async (req, res) => {
-  console.log('Inside reimbursement router for find by user');
+  //console.log('Inside reimbursement router for find by user');
   try {
     const reimburseDao = await new ReimbursementDao();
-    console.log('Param (userid) is: ', req.params.userid);
+    // console.log('Param (userid) is: ', req.params.userid);
     const result = await reimburseDao.findByUserId(req.params.userid);
     if (result) {
-      console.log('Result in router:\n', result);
-      // I get a result but then I get an error about header's already being set.
-      // Without .json I get the output in the terminal but in postman I get a 401 error (login error)
+      console.log('Reimbursement by user_id (router):\n', result);
       res.json(result);
     }
   } catch (error) {
@@ -85,11 +96,11 @@ reimburseRouter.patch('', [loginAuth, financeAdminAuth, async (req, res) => {
   reimbursement.type_id = req.body.type_id;
   try {
     const reimburseDao = await new ReimbursementDao();
-    const result = await reimburseDao.updateReimbursement(reimbursement);
+    const result = await reimburseDao.updateReimbursement(reimbursement, req.session.user['user_id']);
     console.log('Reimburse update request: \n', result);
     if (result) {
       res.status(201).json(result);
-    } 
+    }
   } catch (error) {
     console.log('Error updating reimbursements (router)\n', error);
   }

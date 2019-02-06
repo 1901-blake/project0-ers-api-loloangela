@@ -1,11 +1,8 @@
 // Check that logged in user is either finance-manager or admin
 export function financeAdminAuthMid(req, res, next) {
-  console.log('Authentication claims are: ', req.session.user['role']);
-  
-  // if(req.session.user['isUser']) {
-  if(res.locals.isUser) {
-    console.log('User is requesting themselves ... continue\n', res.locals.isUser);
-    // console.log('User is requesting themselves ... continue\n', req.session.user['isUser']);
+  // console.log('Authentication claims are: ', req.session.user['role']);
+  if (res.locals.isUser) {
+    // console.log('User is requesting themselves ... continue\n', res.locals.isUser);
     next();
   } else {
     // Have to use the else or it will try to execute the next below and kill itself!!!
