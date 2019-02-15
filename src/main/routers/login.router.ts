@@ -15,6 +15,7 @@ import express from 'express';
 import { LoginDao } from '../dao/login.dao';
 import { RoleDao } from '../dao/role.dao';
 import { pswd } from "../index";
+import { Roles } from "../models/roles";
 export const loginRouter = express.Router();
 
 loginRouter.post('', async (req, res) => {
@@ -40,6 +41,7 @@ loginRouter.post('', async (req, res) => {
         console.log('Created user object for session (router):\n', typeof user);
         req.session.user = user;
         // console.log('Set session data: (router)\n', req.session.user);
+        result['role_id'] = ((new Roles()).getRole(result['role_id']));
         res.json(result);
       } else {
         res.status(500).send('An error occured please retry your request later.');

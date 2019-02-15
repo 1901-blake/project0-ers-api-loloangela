@@ -24,7 +24,7 @@ export class UserDao {
       const client = await pool.connect();
       // console.log('Connected to db ...');
       const result = await client.query('SELECT * FROM users;');
-      await client.release();
+      client.release();
       if (result) {
         // console.log('All Users in DAO:\n', result.rows);
         return result.rows || false;
@@ -41,7 +41,7 @@ export class UserDao {
       const client = await pool.connect();
       // console.log('Connected to db ...');
       const result = await client.query('SELECT * FROM users WHERE user_id=$1;', [id]);
-      await client.release();
+      client.release();
       if (result) {
         // console.log('User by id in DAO:\n', result.rows[0]);
         return result.rows[0] || false;
@@ -53,7 +53,7 @@ export class UserDao {
 
   // Update a user's information
   public async updateUser(userData: User, curUser: number) {
-    // console.log('The user data to update is ', userData);
+    console.log('The user data to update is ', userData);
     const pool = SessionFactory.getConnectionPool();
     try {
       const client = await pool.connect();

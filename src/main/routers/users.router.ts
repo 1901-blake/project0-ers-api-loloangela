@@ -19,6 +19,7 @@ import { financeAdminAuthMid as financeAdminAuth } from '../middlewares/finance-
 import { adminAuthMid as adminAuth } from "../middlewares/admin.auth.middleware";
 import { userAuthMid as userAuth } from '../middlewares/user.auth.middleware';
 import { User } from '../models/user';
+import { Roles } from "../models/roles";
 import { pswd } from "../index";
 
 export const usersRouter = express.Router();
@@ -33,6 +34,7 @@ usersRouter.get('', [loginAuth, financeAdminAuth, async (req, res) => {
       // Replace users passwords
       result.forEach(element => {
         element.password = pswd;
+        element.role_id = ((new Roles()).getRole(element['role_id']));
       });
       res.status(201).json(result);
     }
@@ -52,11 +54,12 @@ usersRouter.get('/:userid', [loginAuth, userAuth, financeAdminAuth, async (req, 
       console.log('Users Result in Router:\n', result);
       // Cover password for security
       result.password = pswd;
+      result.role_id = ((new Roles()).getRole(result['role_id']));
       res.status(201).json(result);
     }
   } catch (error) {
     console.log('Unable to get user by id (router):\n', error);
-    res.status(401).send('Unable to get the user');
+    res.status(400).send('Unable to get the user');
   }
 }]);
 
@@ -64,7 +67,7 @@ usersRouter.get('/:userid', [loginAuth, userAuth, financeAdminAuth, async (req, 
 usersRouter.patch('', [loginAuth, adminAuth, async (req, res) => {
   // console.log('Inside the user router (update)');
   const user = new User();
-  // console.log(req.body);
+  console.log("User info from req: ", req.body);
   user.email = req.body.email;
   user.user_id = +req.body.user_id;
   user.password = req.body.password;
@@ -80,6 +83,7 @@ usersRouter.patch('', [loginAuth, adminAuth, async (req, res) => {
       console.log('User update request: \n', result);
       // Remove password for security
       result.password = pswd;
+      result.role_id = ((new Roles()).getRole(result['role_id']));
       res.status(201).json(result);
     }
   } catch (error) {

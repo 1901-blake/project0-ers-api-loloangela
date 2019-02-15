@@ -13,11 +13,11 @@ export class ReimburseStatus {
 
   getStatus(status_id: number) {
     if (status_id === 1) {
-      return "Admin";
+      return "Pending";
     } else if (status_id === 2) {
-      return "Finance Manager";
+      return "Approved";
     } else {
-      return "Associate";
+      return "Denied";
     }
   }
 }

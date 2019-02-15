@@ -18,7 +18,8 @@ import { financeAdminAuthMid as financeAdminAuth } from '../middlewares/finance-
 import { userAuthMid as userAuth } from '../middlewares/user.auth.middleware';
 import { Reimbursements as Reimburse } from '../models/reimbursements';
 import { ReimbursementDao } from '../dao/reimburse.dao';
-
+import { ReimburseStatus } from '../models/reimburse_status'
+import { ReimburseTypes } from '../models/reimburse_types';
 
 export const reimburseRouter = express.Router();
 
@@ -40,6 +41,9 @@ reimburseRouter.post('', [loginAuth, async (req, res) => {
     const result = await reimburseDao.newReimburse(reimbursement);
     if (result) {
       console.log('Reimburse response:\n', result);
+      let rs = new ReimburseStatus();
+      result['status_id'] = rs.getStatus(result['status_id']);
+      console.log('The status_id: ', result['status_id']);
       res.status(201).json(result);
     }
   } catch (error) {
@@ -56,6 +60,10 @@ reimburseRouter.get('/status/:statusid', [loginAuth, financeAdminAuth, async (re
     const result = await reimburseDao.findById(req.params.statusid);
     if (result) {
       console.log('Reimbursements by status_id:\n', result);
+      result.forEach(element => {
+        element.status_id = (new ReimburseStatus()).getStatus(element.status_id);
+        element.type_id = (new ReimburseTypes()).getReimbTypes(element.type_id);
+      });
       res.status(201).json(result);
     }
   } catch (error) {
@@ -73,6 +81,10 @@ reimburseRouter.get('/author/:userid', [loginAuth, userAuth, financeAdminAuth, a
     const result = await reimburseDao.findByUserId(req.params.userid);
     if (result) {
       console.log('Reimbursement by user_id (router):\n', result);
+      result.forEach(element => {
+        element.status_id = (new ReimburseStatus()).getStatus(element.status_id);
+        element.type_id = (new ReimburseTypes()).getReimbTypes(element.type_id);
+      });
       res.json(result);
     }
   } catch (error) {
@@ -83,9 +95,9 @@ reimburseRouter.get('/author/:userid', [loginAuth, userAuth, financeAdminAuth, a
 
 // Update reimbursement
 reimburseRouter.patch('', [loginAuth, financeAdminAuth, async (req, res) => {
-  // console.log('Inside reimburse router for update');
+  console.log('Inside reimburse router for update');
   const reimbursement = new Reimburse();
-  // console.log(req.body);
+  console.log(req.body);
   reimbursement.reimburse_id = req.body.reimburse_id;
   reimbursement.author_id = req.body.author_id;
   reimbursement.amount = req.body.amount;
@@ -103,5 +115,6 @@ reimburseRouter.patch('', [loginAuth, financeAdminAuth, async (req, res) => {
     }
   } catch (error) {
     console.log('Error updating reimbursements (router)\n', error);
+    res.status(400).send('Unable to update reimbursements!');
   }
 }]);

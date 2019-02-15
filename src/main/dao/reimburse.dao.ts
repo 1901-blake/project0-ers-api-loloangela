@@ -15,7 +15,8 @@
 import { SessionFactory } from '../util/session-factory';
 import { Reimbursements } from '../models/reimbursements';
 import { constructUpdate } from './constructUpdate';
-
+import { ReimburseStatus } from "../models/reimburse_status";
+import { ReimburseTypes } from "../models/reimburse_types";
 export class ReimbursementDao {
   // Submit a new reimbursement
   public async newReimburse(reimburseData: Reimbursements) {
@@ -28,6 +29,11 @@ export class ReimbursementDao {
         reimburseData.status_id, reimburseData.type_id]);
       client.release();
       // console.log(result.rows[0]);
+      if (result.rows[0]['status_id']) {
+        result.rows[0]['status_id'] = (new ReimburseStatus()).getStatus(result.rows[0]['status_id']);
+        result.rows[0]['type_id'] = (new ReimburseTypes()).getReimbTypes(result.rows[0]['type_id']);
+      }
+      console.log('Status & Type ', result.rows[0]['status_id'], result.rows[0]['status_id']);
       return result.rows[0] || false;
     } catch (error) {
       console.log('There was an issue submitting the reimbursement.\n', error);
@@ -43,8 +49,13 @@ export class ReimbursementDao {
       const client = await pool.connect();
       // console.log('Connected to db ...');
       const result = await client.query('SELECT * FROM reimbursements WHERE status_id=$1;', [id]);
+      client.release();
       if (result) {
         // console.log('From the db we got these reimbursements:\n', result.rows);
+        if (result.rows[0]['status_id']) {
+          result.rows[0]['status_id'] = (new ReimburseStatus()).getStatus(result.rows[0]['status_id']);
+          result.rows[0]['type_id'] = (new ReimburseTypes()).getReimbTypes(result.rows[0]['type_id']);
+        }
         return result.rows || false;
       } else {
         return false;
@@ -67,6 +78,10 @@ export class ReimbursementDao {
         // console.log('From the db we got these reimbursements:\n', result.rows);
         return result.rows || false;
       } else {
+        /* if (result.rows[0]['status_id']) {
+          result.rows[0]['status_id'] = (new ReimburseStatus()).getStatus(result.rows[0]['status_id']);
+          result.rows[0]['type_id'] = (new ReimburseTypes()).getReimbTypes(result.rows[0]['type_id']);
+        } */
         return false;
       }
     } catch (error) {
@@ -92,6 +107,10 @@ export class ReimbursementDao {
       // Return result
       if (result) {
         // console.log('Result from reimbursement update (dao): \n' result.rows[0]);
+        /* if (result.rows[0]['status_id']) {
+          result.rows[0]['status_id'] = (new ReimburseStatus()).getStatus(result.rows[0]['status_id']);
+          result.rows[0]['type_id'] = (new ReimburseTypes()).getReimbTypes(result.rows[0]['type_id']);
+        } */
         return result.rows[0];
       } else {
         return false;

@@ -17,7 +17,7 @@ export class SessionFactory {
     user: process.env.PostgreSQLUser,
     password: process.env.PostgreSQLPassword,
     max: 10,
-    port: process.env.PostgreSQLPort
+    port: 5433
   };
   static pool: Pool;
   static created = false;
